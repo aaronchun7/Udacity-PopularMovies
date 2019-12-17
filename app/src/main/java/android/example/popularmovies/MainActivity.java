@@ -1,14 +1,211 @@
 package android.example.popularmovies;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.Intent;
+import android.example.popularmovies.utilities.NetworkUtils;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieItemClickListener, AdapterView.OnItemSelectedListener {
+//public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieItemClickListener {
+
+    private String mLanguage = "en-US";
+    private String mRegion = "";
+    private String[] mApiParams;
+
+    private static int mPageNumber;
+    private static int mTotalPageNumber;
+    private static String mSortType;
+//    private static String[] mMovieListData;
+//    private static int[] mPageArray;
+    private static ArrayList<Integer> mPageArray;
+    private static MovieAdapter mMovieAdapter;
+
+    private TextView mPageLabel, mSortByLabel;
+    private static Spinner mPageSpinner, mSortBySpinner;
+    private RecyclerView mMovieList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mPageLabel = findViewById(R.id.tv_page_label);
+        mPageSpinner = findViewById(R.id.spinner_page);
+        mSortByLabel = findViewById(R.id.tv_sort_by_label);
+        mSortBySpinner = findViewById(R.id.spinner_sort_by);
+        mMovieList = findViewById(R.id.rv_movies);
+
+        if (savedInstanceState != null) {
+            mPageArray = savedInstanceState.getIntegerArrayList("pageArrayList");
+            ArrayAdapter<Integer> pageSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mPageArray);
+            mPageSpinner.setAdapter(pageSpinnerAdapter);
+            mPageSpinner.setSelection(savedInstanceState.getInt("pageSpinner", 0));
+            mSortBySpinner.setSelection(savedInstanceState.getInt("sortBySpinner", 0));
+
+        }
+
+        mPageSpinner.setOnItemSelectedListener(this);
+        mSortBySpinner.setOnItemSelectedListener(this);
+
+        GridLayoutManager layoutManager = new GridLayoutManager(this,3, GridLayoutManager.VERTICAL, false);
+        mMovieList.setLayoutManager(layoutManager);
+        mMovieList.setHasFixedSize(true);
+
+        mMovieAdapter = new MovieAdapter(this);
+        mMovieList.setAdapter(mMovieAdapter);
+
+        if (mPageNumber == 0 || mPageNumber > mTotalPageNumber) {
+            mPageNumber = 1;
+        }
+
+        if (mSortType == null) {
+            mSortType = getResources().getString(R.string.popular_sort);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle bundle) {
+        super.onSaveInstanceState(bundle);
+
+        bundle.putIntegerArrayList("pageArrayList", mPageArray);
+        bundle.putInt("pageSpinner", mPageSpinner.getSelectedItemPosition());
+//        bundle.putInt("pageNumber", mPageNumber);
+        bundle.putInt("sortBySpinner", mSortBySpinner.getSelectedItemPosition());
+//        bundle.putString("sortType", mSortType);
+    }
+
+    @Override
+    public void onMovieItemClick(String movieData) {
+        Context context = this;
+        Class destinationClass = DetailActivity.class;
+        Intent intentToStartDetailActivity = new Intent(context, destinationClass);
+        intentToStartDetailActivity.putExtra(Intent.EXTRA_TEXT, movieData);
+        startActivity(intentToStartDetailActivity);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        mMovieAdapter.setMovieListData(null);
+        int selectedId = parent.getId();
+        switch(selectedId) {
+            case (R.id.spinner_page):
+                mPageNumber = mPageArray.get(position);
+                mApiParams = new String[]{
+                        mSortType,
+                        mLanguage,
+                        String.valueOf(mPageNumber),
+                        mRegion
+                };
+                break;
+            case (R.id.spinner_sort_by):
+                mSortType = mSortBySpinner.getItemAtPosition(position).toString();
+                mApiParams = new String[]{
+                        mSortType,
+                        mLanguage,
+                        String.valueOf(mPageNumber),
+                        mRegion
+                };
+                break;
+        }
+        new FetchMoviesTask(this).execute(mApiParams);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        // TODO spinner selection
+    }
+
+    public static class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
+
+        private static Context mContext;
+
+        public FetchMoviesTask(Context context) {
+            mContext = context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // TODO maybe show a progress bar
+
+        }
+
+        @Override
+        protected String[] doInBackground(String... params) {
+
+            if(params.length == 0) {
+                return null;
+            }
+
+            String sort = params[0];
+            String language = params[1];
+            int pageNumber = Integer.parseInt(params[2]); // Might want to try catch for invalid number
+            String region = params[3];
+
+            switch(sort){
+                case "Popular":
+                    URL popularUrl = NetworkUtils.getPopularMovies(language, pageNumber, region);
+
+                    try {
+                        String popularMovieJson = NetworkUtils.getResponseFromHttpsUrl(popularUrl);
+                        return NetworkUtils.parseMovieListDataFromJson(popularMovieJson);
+                    } catch (Exception pme) {
+                        pme.printStackTrace();
+                        return null;
+                    }
+                case "Top Rated":
+                    URL topRatedUrl = NetworkUtils.getTopRatedMovies(language, pageNumber, region);
+
+                    try {
+                        String topRatedMovieJson = NetworkUtils.getResponseFromHttpsUrl(topRatedUrl);
+                        return NetworkUtils.parseMovieListDataFromJson(topRatedMovieJson);
+                    } catch (Exception pme) {
+                        pme.printStackTrace();
+                        return null;
+                    }
+                default:
+                    break;
+            }
+
+            return new String[0];
+        }
+
+        @Override
+        protected void onPostExecute(String[] movieListData) {
+            if(movieListData != null) {
+                mTotalPageNumber = Integer.parseInt(movieListData[2]);
+                if (mPageArray == null) {
+                    mPageArray = new ArrayList<>();
+                }
+
+                if (mPageArray.size() != mTotalPageNumber) {
+                    mPageArray.clear();
+                    for (int i = 1; i <= mTotalPageNumber; i++) {
+                        mPageArray.add(i);
+                    }
+                    ArrayAdapter<Integer> pageSpinnerAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item, mPageArray);
+                    mPageSpinner.setAdapter(pageSpinnerAdapter);
+                }
+                mMovieAdapter.setMovieListData(NetworkUtils.parseMovieListFromJson(movieListData[3]));
+            }
+        }
     }
 }
