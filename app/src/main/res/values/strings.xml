@@ -4,9 +4,9 @@
     <string name="popular_sort">Popular</string>
     <string name="top_rated_sort">Top Rated</string>
     <string name="page">Page:</string>
-    <string name="releaseDateLabel">Release Date: </string>
-    <string name="voteAverageLabel">Vote Average: </string>
-    <string name="plotSynopsisLabel">Plot Synopsis: </string>
+    <string name="releaseDateLabel">Release Date</string>
+    <string name="voteAverageLabel">Vote Average</string>
+    <string name="plotSynopsisLabel">Plot Synopsis</string>
     <string-array name="sort_by_list">
         <item>@string/popular_sort</item>
         <item>@string/top_rated_sort</item>

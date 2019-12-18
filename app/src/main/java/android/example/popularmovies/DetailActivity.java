@@ -21,11 +21,10 @@ import java.util.Locale;
 
 public class DetailActivity extends AppCompatActivity {
 
-    private final String mImageSize = "w185";
+    private final String mImageSize = "w500";
 
     private Movie mMovie;
     private ImageView mPoster;
-    private ProgressBar mPosterProgress;
     private TextView mReleaseDateLabel, mReleaseDateDetail, mVoteAverageLabel, mVoteAverageDetail, mPlotSynopsisLabel, mPlotSynopsisDetail;
 
     @Override
@@ -34,7 +33,6 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
 
         mPoster = findViewById(R.id.iv_movie_poster);
-        mPosterProgress = findViewById(R.id.pb_poster_detail);
         mReleaseDateLabel = findViewById(R.id.tv_release_date_label);
         mReleaseDateDetail = findViewById(R.id.tv_release_date_detail);
         mVoteAverageLabel = findViewById(R.id.tv_vote_average_label);
@@ -64,10 +62,9 @@ public class DetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
 
         return(super.onOptionsItemSelected(item));
