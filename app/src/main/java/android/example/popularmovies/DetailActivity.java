@@ -21,35 +21,27 @@ import java.util.Locale;
 
 public class DetailActivity extends AppCompatActivity {
 
-    private final String mImageSize = "w500";
-
     private Movie mMovie;
-    private ImageView mPoster;
-    private TextView mReleaseDateLabel, mReleaseDateDetail, mVoteAverageLabel, mVoteAverageDetail, mPlotSynopsisLabel, mPlotSynopsisDetail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        mPoster = findViewById(R.id.iv_movie_poster);
-        mReleaseDateLabel = findViewById(R.id.tv_release_date_label);
-        mReleaseDateDetail = findViewById(R.id.tv_release_date_detail);
-        mVoteAverageLabel = findViewById(R.id.tv_vote_average_label);
-        mVoteAverageDetail = findViewById(R.id.tv_vote_average_detail);
-        mPlotSynopsisLabel = findViewById(R.id.tv_plot_synopsis_label);
-        mPlotSynopsisDetail = findViewById(R.id.tv_plot_synopsis_detail);
+        ImageView mPoster = findViewById(R.id.iv_movie_poster);
+        TextView mReleaseDateDetail = findViewById(R.id.tv_release_date_detail);
+        TextView mVoteAverageDetail = findViewById(R.id.tv_vote_average_detail);
+        TextView mPlotSynopsisDetail = findViewById(R.id.tv_plot_synopsis_detail);
 
-        // TODO: get the intent from the MainActivity and grab the extras to fill in the textviews
         Intent intent = getIntent();
         if (intent.hasExtra(Intent.EXTRA_TEXT)) {
             String movieData = intent.getStringExtra(Intent.EXTRA_TEXT);
             mMovie = NetworkUtils.parseMovieDataFromJson(movieData);
         }
 
-        //TODO: Make the call to try get the movie poster to show
         if(mMovie != null) {
             this.setTitle(mMovie.getTitle());
+            String mImageSize = "w500";
             String imageUrl = NetworkUtils.IMAGE_BASE_URL + mImageSize + mMovie.getPosterPath();
             Picasso.get().load(imageUrl).into(mPoster);
             mReleaseDateDetail.setText(mMovie.getReleaseDate());

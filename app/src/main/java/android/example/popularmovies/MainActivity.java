@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieItemClickListener, AdapterView.OnItemSelectedListener {
-//public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieItemClickListener {
 
     private String mLanguage = "en-US";
     private String mRegion = "";
@@ -33,30 +32,26 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private static int mPageNumber;
     private static int mTotalPageNumber;
     private static String mSortType;
-//    private static String[] mMovieListData;
-//    private static int[] mPageArray;
     private static ArrayList<Integer> mPageArray;
     private static MovieAdapter mMovieAdapter;
 
-    private TextView mPageLabel, mSortByLabel;
     private static Spinner mPageSpinner, mSortBySpinner;
-    private RecyclerView mMovieList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mPageLabel = findViewById(R.id.tv_page_label);
         mPageSpinner = findViewById(R.id.spinner_page);
-        mSortByLabel = findViewById(R.id.tv_sort_by_label);
         mSortBySpinner = findViewById(R.id.spinner_sort_by);
-        mMovieList = findViewById(R.id.rv_movies);
+        RecyclerView mMovieList = findViewById(R.id.rv_movies);
 
         if (savedInstanceState != null) {
             mPageArray = savedInstanceState.getIntegerArrayList("pageArrayList");
-            ArrayAdapter<Integer> pageSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mPageArray);
-            mPageSpinner.setAdapter(pageSpinnerAdapter);
+            if (mPageArray != null) {
+                ArrayAdapter<Integer> pageSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mPageArray);
+                mPageSpinner.setAdapter(pageSpinnerAdapter);
+            }
             mPageSpinner.setSelection(savedInstanceState.getInt("pageSpinner", 0));
             mSortBySpinner.setSelection(savedInstanceState.getInt("sortBySpinner", 0));
 
@@ -87,9 +82,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         bundle.putIntegerArrayList("pageArrayList", mPageArray);
         bundle.putInt("pageSpinner", mPageSpinner.getSelectedItemPosition());
-//        bundle.putInt("pageNumber", mPageNumber);
         bundle.putInt("sortBySpinner", mSortBySpinner.getSelectedItemPosition());
-//        bundle.putString("sortType", mSortType);
     }
 
     @Override
@@ -135,9 +128,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     public static class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
 
-        private static Context mContext;
+        Context mContext;
 
-        public FetchMoviesTask(Context context) {
+        FetchMoviesTask(Context context) {
             mContext = context;
         }
 
@@ -157,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
             String sort = params[0];
             String language = params[1];
-            int pageNumber = Integer.parseInt(params[2]); // Might want to try catch for invalid number
+            int pageNumber = Integer.parseInt(params[2]);
             String region = params[3];
 
             switch(sort){
