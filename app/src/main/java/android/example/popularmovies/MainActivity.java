@@ -25,8 +25,6 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieItemClickListener, AdapterView.OnItemSelectedListener {
 
-    private String mLanguage = "en-US";
-    private String mRegion = "";
     private String[] mApiParams;
 
     private static int mPageNumber;
@@ -35,10 +33,16 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private static ArrayList<Integer> mPageArray;
     private static MovieAdapter mMovieAdapter;
     public static int mThumbnailWidth;
-    private static ProgressBar mProgressBar;
-    private static TextView mErrorTextView;
 
-    private static Spinner mPageSpinner, mSortBySpinner;
+    @SuppressLint("StaticFieldLeak")
+    private static ProgressBar mProgressBar;
+
+    @SuppressLint("StaticFieldLeak")
+    private static TextView mErrorTextView;
+    private Spinner mSortBySpinner;
+
+    @SuppressLint("StaticFieldLeak")
+    private static Spinner mPageSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +123,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         mMovieAdapter.setMovieListData(null);
         int selectedId = parent.getId();
+        String mLanguage = "en-US";
+        String mRegion = "";
         switch(selectedId) {
             case (R.id.spinner_page):
                 mPageNumber = mPageArray.get(position);
@@ -147,10 +153,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         // Do nothing
     }
 
-    public static class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
+    private static class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
 
         @SuppressLint("StaticFieldLeak")
-        Context mContext;
+        final Context mContext;
 
         FetchMoviesTask(Context context) {
             mContext = context;
