@@ -5,23 +5,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.example.popularmovies.utilities.NetworkUtils;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieItemClickListener, AdapterView.OnItemSelectedListener {
 
@@ -34,6 +34,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private static String mSortType;
     private static ArrayList<Integer> mPageArray;
     private static MovieAdapter mMovieAdapter;
+    public static int mThumbnailWidth;
+    private static ProgressBar mProgressBar;
+    private static TextView mErrorTextView;
 
     private static Spinner mPageSpinner, mSortBySpinner;
 
@@ -45,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mPageSpinner = findViewById(R.id.spinner_page);
         mSortBySpinner = findViewById(R.id.spinner_sort_by);
         RecyclerView mMovieList = findViewById(R.id.rv_movies);
+        mProgressBar = findViewById(R.id.pb_movie_list);
+        mErrorTextView = findViewById(R.id.tv_error_message);
 
         if (savedInstanceState != null) {
             mPageArray = savedInstanceState.getIntegerArrayList("pageArrayList");
@@ -60,7 +65,21 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mPageSpinner.setOnItemSelectedListener(this);
         mSortBySpinner.setOnItemSelectedListener(this);
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this,3, GridLayoutManager.VERTICAL, false);
+        // Get screen width
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int screenPixelWidth = displayMetrics.widthPixels;
+
+        int gridWidthSpan;
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            gridWidthSpan = 3;
+        } else {
+            gridWidthSpan = 5;
+        }
+
+        mThumbnailWidth = screenPixelWidth/gridWidthSpan;
+
+        GridLayoutManager layoutManager = new GridLayoutManager(this,gridWidthSpan, GridLayoutManager.VERTICAL, false);
         mMovieList.setLayoutManager(layoutManager);
         mMovieList.setHasFixedSize(true);
 
@@ -69,10 +88,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         if (mPageNumber == 0 || mPageNumber > mTotalPageNumber) {
             mPageNumber = 1;
+            mPageSpinner.setSelection(0);
         }
 
         if (mSortType == null) {
             mSortType = getResources().getString(R.string.popular_sort);
+            mSortBySpinner.setSelection(0);
         }
     }
 
@@ -123,11 +144,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        // TODO spinner selection
+        // Do nothing
     }
 
     public static class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
 
+        @SuppressLint("StaticFieldLeak")
         Context mContext;
 
         FetchMoviesTask(Context context) {
@@ -137,8 +159,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            // TODO maybe show a progress bar
-
+            mErrorTextView.setVisibility(View.INVISIBLE);
+            mProgressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -183,6 +205,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         @Override
         protected void onPostExecute(String[] movieListData) {
+            mProgressBar.setVisibility(View.INVISIBLE);
             if(movieListData != null) {
                 mTotalPageNumber = Integer.parseInt(movieListData[2]);
                 if (mPageArray == null) {
@@ -198,6 +221,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                     mPageSpinner.setAdapter(pageSpinnerAdapter);
                 }
                 mMovieAdapter.setMovieListData(NetworkUtils.parseMovieListFromJson(movieListData[3]));
+            } else {
+                mErrorTextView.setVisibility(View.VISIBLE);
             }
         }
     }

@@ -7,6 +7,7 @@
     <string name="releaseDateLabel">Release Date</string>
     <string name="voteAverageLabel">Vote Average</string>
     <string name="plotSynopsisLabel">Plot Synopsis</string>
+    <string name="errorNoMovieData">Unfortunately, it appears there was no movie data pulled down. Try again later.</string>
     <string-array name="sort_by_list">
         <item>@string/popular_sort</item>
         <item>@string/top_rated_sort</item>

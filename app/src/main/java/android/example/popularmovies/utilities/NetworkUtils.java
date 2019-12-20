@@ -1,9 +1,7 @@
 package android.example.popularmovies.utilities;
 
-import android.example.popularmovies.R;
 import android.example.popularmovies.model.Movie;
 import android.net.Uri;
-import android.os.AsyncTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,8 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import javax.net.ssl.HttpsURLConnection;
-
 public class NetworkUtils {
 
     public static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
@@ -30,10 +26,8 @@ public class NetworkUtils {
     private static final String PAGE_PARAM = "page";
     private static final String REGION_PARAM = "region";
 
-    //This is the recommended size; however, I might want to dynamically change this
+    //This is the recommended size; however, the adapter will resize it dynamically
     public static final String IMAGE_SIZE = "w185";
-
-    private String mPosterPath;
 
     public static URL getPopularMovies(String language, int page, String region) {
         Uri popularUri = Uri.parse(MOVIE_POPULAR_URL).buildUpon()

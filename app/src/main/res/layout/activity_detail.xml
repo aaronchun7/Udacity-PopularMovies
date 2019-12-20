@@ -11,39 +11,47 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/iv_movie_poster"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:minHeight="150dp"
-        android:layout_gravity="center_horizontal"/>
+        <ImageView
+            android:id="@+id/iv_movie_poster"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="150dp"
+            android:layout_gravity="center_horizontal"/>
 
-    <TextView
-        android:id="@+id/tv_release_date_label"
-        style="@style/DetailLabel"
-        android:text="@string/releaseDateLabel"/>
+        <TextView
+            android:id="@+id/tv_release_date_label"
+            style="@style/DetailLabel"
+            android:text="@string/releaseDateLabel"/>
 
-    <TextView
-        android:id="@+id/tv_release_date_detail"
-        style="@style/DetailText"/>
+        <TextView
+            android:id="@+id/tv_release_date_detail"
+            style="@style/DetailText"/>
 
-    <TextView
-        android:id="@+id/tv_vote_average_label"
-        style="@style/DetailLabel"
-        android:text="@string/voteAverageLabel"/>
+        <TextView
+            android:id="@+id/tv_vote_average_label"
+            style="@style/DetailLabel"
+            android:text="@string/voteAverageLabel"/>
 
-    <TextView
-        android:id="@+id/tv_vote_average_detail"
-        style="@style/DetailText"/>
+        <TextView
+            android:id="@+id/tv_vote_average_detail"
+            style="@style/DetailText"/>
 
-    <TextView
-        android:id="@+id/tv_plot_synopsis_label"
-        style="@style/DetailLabel"
-        android:text="@string/plotSynopsisLabel"/>
+        <TextView
+            android:id="@+id/tv_plot_synopsis_label"
+            style="@style/DetailLabel"
+            android:text="@string/plotSynopsisLabel"/>
 
-    <TextView
-        android:id="@+id/tv_plot_synopsis_detail"
-        style="@style/DetailText"/>
+        <TextView
+            android:id="@+id/tv_plot_synopsis_detail"
+            style="@style/DetailText"/>
+
+        <TextView
+            android:id="@+id/tv_error_message"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            android:text="@string/errorNoMovieData"
+            style="@style/ErrorText"/>
 
     </LinearLayout>
 </ScrollView>
