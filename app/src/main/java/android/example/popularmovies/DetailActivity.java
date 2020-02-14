@@ -22,7 +22,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private Movie mMovie;
     private ImageView mPoster;
     private TextView mReleaseDateDetail, mDurationDetail,
-            mVoteAverageDetail, mPlotSynopsisDetail, mErrorMessage;
+            mVoteAverageDetail, mPlotSynopsisDetail, mTrailerLabel, mErrorMessage;
     private RecyclerView mTrailerList;
     private TrailerAdapter mTrailerAdapter;
 
@@ -36,6 +36,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mDurationDetail = findViewById(R.id.tv_duration_detail);
         mVoteAverageDetail = findViewById(R.id.tv_vote_average_detail);
         mPlotSynopsisDetail = findViewById(R.id.tv_plot_synopsis_detail);
+        mTrailerLabel = findViewById(R.id.tv_trailer_label);
         mErrorMessage = findViewById(R.id.tv_error_message);
 
         mTrailerList = findViewById(R.id.rv_trailers);
@@ -49,7 +50,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         if(mMovie != null) {
             showFields();
             this.setTitle(mMovie.getTitle());
-            String mImageSize = "w500";
+            String mImageSize = "w400";
             String imageUrl = NetworkUtils.IMAGE_BASE_URL + mImageSize + mMovie.getPosterPath();
             Picasso.get().load(imageUrl).into(mPoster);
             mReleaseDateDetail.setText(mMovie.getReleaseDate());
@@ -85,6 +86,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mDurationDetail.setVisibility(View.VISIBLE);
         mVoteAverageDetail.setVisibility(View.VISIBLE);
         mPlotSynopsisDetail.setVisibility(View.VISIBLE);
+        mTrailerLabel.setVisibility(View.VISIBLE);
+        mTrailerList.setVisibility(View.VISIBLE);
         mErrorMessage.setVisibility(View.INVISIBLE);
 
     }
@@ -95,6 +98,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mReleaseDateDetail.setVisibility(View.INVISIBLE);
         mVoteAverageDetail.setVisibility(View.INVISIBLE);
         mPlotSynopsisDetail.setVisibility(View.INVISIBLE);
+        mTrailerLabel.setVisibility(View.INVISIBLE);
+        mTrailerList.setVisibility(View.INVISIBLE);
         mErrorMessage.setVisibility(View.VISIBLE);
     }
 
@@ -105,11 +110,13 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        // Go to youtube website or app
 
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
+        // Do nothing
 
     }
 }
