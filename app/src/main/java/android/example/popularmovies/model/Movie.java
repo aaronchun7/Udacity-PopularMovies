@@ -18,6 +18,8 @@ public class Movie {
     private String overview;
     private String releaseDate; //In YYYY-MM-DD format
 
+    private int runtime;
+
     public Movie() {
         // Default Constructor
     }
@@ -132,5 +134,13 @@ public class Movie {
 
     public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
+    }
+
+    public int getRuntime() {
+        return runtime;
+    }
+
+    public void setRuntime(int runtime) {
+        this.runtime = runtime;
     }
 }

@@ -1,6 +1,8 @@
 package android.example.popularmovies;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.example.popularmovies.model.Movie;
@@ -8,17 +10,21 @@ import android.example.popularmovies.utilities.NetworkUtils;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerItemClickListener, AdapterView.OnItemSelectedListener {
 
     private Movie mMovie;
     private ImageView mPoster;
-    private TextView mReleaseDateLabel, mVoteAverageLabel, mPlotSynopsisLabel, mReleaseDateDetail,
+    private TextView mReleaseDateDetail, mDurationDetail,
             mVoteAverageDetail, mPlotSynopsisDetail, mErrorMessage;
+    private RecyclerView mTrailerList;
+    private TrailerAdapter mTrailerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,13 +32,13 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
 
         mPoster = findViewById(R.id.iv_movie_poster);
-        mReleaseDateLabel = findViewById(R.id.tv_release_date_label);
-        mVoteAverageLabel = findViewById(R.id.tv_vote_average_label);
-        mPlotSynopsisLabel = findViewById(R.id.tv_plot_synopsis_label);
         mReleaseDateDetail = findViewById(R.id.tv_release_date_detail);
+        mDurationDetail = findViewById(R.id.tv_duration_detail);
         mVoteAverageDetail = findViewById(R.id.tv_vote_average_detail);
         mPlotSynopsisDetail = findViewById(R.id.tv_plot_synopsis_detail);
         mErrorMessage = findViewById(R.id.tv_error_message);
+
+        mTrailerList = findViewById(R.id.rv_trailers);
 
         Intent intent = getIntent();
         if (intent.hasExtra(Intent.EXTRA_TEXT)) {
@@ -47,8 +53,17 @@ public class DetailActivity extends AppCompatActivity {
             String imageUrl = NetworkUtils.IMAGE_BASE_URL + mImageSize + mMovie.getPosterPath();
             Picasso.get().load(imageUrl).into(mPoster);
             mReleaseDateDetail.setText(mMovie.getReleaseDate());
+            mDurationDetail.setText(String.valueOf(mMovie.getRuntime()));
             mVoteAverageDetail.setText(String.valueOf(mMovie.getVoteAverage()));
             mPlotSynopsisDetail.setText(mMovie.getOverview());
+
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+            mTrailerList.setLayoutManager(linearLayoutManager);
+            mTrailerList.setHasFixedSize(true);
+
+            mTrailerAdapter = new TrailerAdapter(this, this);
+            mTrailerList.setAdapter(mTrailerAdapter);
+
         } else {
             showError();
         }
@@ -66,23 +81,35 @@ public class DetailActivity extends AppCompatActivity {
 
     private void showFields() {
         mPoster.setVisibility(View.VISIBLE);
-        mReleaseDateLabel.setVisibility(View.VISIBLE);
-        mVoteAverageLabel.setVisibility(View.VISIBLE);
-        mPlotSynopsisLabel.setVisibility(View.VISIBLE);
         mReleaseDateDetail.setVisibility(View.VISIBLE);
+        mDurationDetail.setVisibility(View.VISIBLE);
         mVoteAverageDetail.setVisibility(View.VISIBLE);
         mPlotSynopsisDetail.setVisibility(View.VISIBLE);
         mErrorMessage.setVisibility(View.INVISIBLE);
+
     }
 
     private void showError() {
         mPoster.setVisibility(View.INVISIBLE);
-        mReleaseDateLabel.setVisibility(View.INVISIBLE);
-        mVoteAverageLabel.setVisibility(View.INVISIBLE);
-        mPlotSynopsisLabel.setVisibility(View.INVISIBLE);
+        mDurationDetail.setVisibility(View.INVISIBLE);
         mReleaseDateDetail.setVisibility(View.INVISIBLE);
         mVoteAverageDetail.setVisibility(View.INVISIBLE);
         mPlotSynopsisDetail.setVisibility(View.INVISIBLE);
         mErrorMessage.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onTrailerItemClick(String trailerData) {
+
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }

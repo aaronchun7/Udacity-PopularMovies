@@ -21,6 +21,9 @@ public class NetworkUtils {
     public static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
     private static final String MOVIE_POPULAR_URL = "https://api.themoviedb.org/3/movie/popular";
     private static final String MOVIE_TOP_RATED_URL = "https://api.themoviedb.org/3/movie/top_rated";
+    private static final String MOVIE_TRAILER_URL = "https://api.themoviedb.org/3/movie/%s/videos";
+    private static final String MOVIE_REVIEWS_URL = "https://api.themoviedb.org/3/movie/%s/reviews";
+    private static final String YOUTUBE_LINK = "https://www.youtube.com/watch?v=";
     private static final String API_PARAM = "api_key";
     private static final String LANG_PARAM = "language";
     private static final String PAGE_PARAM = "page";
@@ -119,6 +122,7 @@ public class NetworkUtils {
         return null;
     }
 
+    // TODO might need to change to use the get movie detail api: https://developers.themoviedb.org/3/movies/get-movie-details
     public static Movie parseMovieDataFromJson(String movieDataJson) {
         if (movieDataJson != null && !movieDataJson.isEmpty()) {
             try {

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/vertical_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5"/>
+
+        <ImageView
+            android:id="@+id/iv_movie_poster"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/vertical_center"
+            app:layout_constraintTop_toTopOf="parent"
+            android:minHeight="150dp"
+            android:paddingTop="5dp"
+            android:contentDescription="@string/detailPosterDescription"/>
+
+        <TextView
+            android:id="@+id/tv_release_date_detail"
+            style="@style/DetailText"
+            app:layout_constraintTop_toTopOf="@id/iv_movie_poster"
+            app:layout_constraintLeft_toLeftOf="@id/vertical_center"
+            tools:text="@string/releaseDateYear" />
+
+        <TextView
+            android:id="@+id/tv_duration_detail"
+            style="@style/DetailText"
+            app:layout_constraintTop_toBottomOf="@id/tv_release_date_detail"
+            app:layout_constraintLeft_toLeftOf="@id/tv_release_date_detail"
+            tools:text="@string/movieDuration"/>
+
+        <TextView
+            android:id="@+id/tv_vote_average_detail"
+            style="@style/DetailText"
+            app:layout_constraintTop_toBottomOf="@id/tv_duration_detail"
+            app:layout_constraintLeft_toLeftOf="@id/tv_duration_detail"
+            tools:text="@string/voteAverageRating"/>
+
+        <Button
+            android:id="@+id/btn_favorite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/tv_vote_average_detail"
+            app:layout_constraintLeft_toLeftOf="@id/tv_vote_average_detail" />
+
+        <TextView
+            android:id="@+id/tv_plot_synopsis_detail"
+            style="@style/DetailText"
+            app:layout_constraintTop_toBottomOf="@id/iv_movie_poster"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:text="@string/plotSynopsisSummary"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
