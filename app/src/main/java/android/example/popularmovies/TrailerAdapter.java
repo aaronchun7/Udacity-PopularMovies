@@ -1,6 +1,7 @@
 package android.example.popularmovies;
 
 import android.content.Context;
+import android.example.popularmovies.model.Trailer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerViewHolder>{
 
     private final TrailerItemClickListener mOnClickListener;
-    private List<String> mTrailerListData;
+    private List<Trailer> mTrailerListData;
     Context mContext;
 
     public interface TrailerItemClickListener {
-        void onTrailerItemClick(String trailerData);
+//        void onTrailerItemClick(String trailerData);
+        void onTrailerItemClick(Trailer trailer);
     }
 
     TrailerAdapter(TrailerItemClickListener trailerItemClickListener, Context context) {
@@ -40,7 +42,10 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
 
     @Override
     public void onBindViewHolder(@NonNull TrailerViewHolder trailerViewHolder, int position) {
-        String trailerText = String.format(mContext.getResources().getString(R.string.trailerItemText), position + 1);
+        Trailer trailer = mTrailerListData.get(position);
+
+//        String trailerText = String.format(mContext.getResources().getString(R.string.trailerItemText), position + 1);
+        String trailerText = trailer.getName();
         trailerViewHolder.mTrailerLabel.setText(trailerText);
     }
 
@@ -49,6 +54,11 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
         if(null == mTrailerListData)
             return 0;
         return mTrailerListData.size();
+    }
+
+    public void setTrailerListData(List<Trailer> trailerListData) {
+        mTrailerListData = trailerListData;
+        notifyDataSetChanged();
     }
 
     public class TrailerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -65,6 +75,9 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
         @Override
         public void onClick(View v) {
             Toast.makeText(mContext, "Go to youtube to view the trailer.", Toast.LENGTH_SHORT).show();
+
+            int clickedPosition = getAdapterPosition();
+            mOnClickListener.onTrailerItemClick(mTrailerListData.get(clickedPosition));
         }
     }
 }

@@ -17,8 +17,10 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_trailers"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
         app:layout_constraintTop_toBottomOf="@id/tv_trailer_label"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="@id/tv_trailer_label"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -18,6 +18,7 @@ public class Movie {
     private String overview;
     private String releaseDate; //In YYYY-MM-DD format
 
+    private List<Trailer> trailers;
     private int runtime;
 
     public Movie() {
@@ -134,6 +135,14 @@ public class Movie {
 
     public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
+    }
+
+    public List<Trailer> getTrailers() {
+        return trailers;
+    }
+
+    public void setTrailers(List<Trailer> trailers) {
+        this.trailers = trailers;
     }
 
     public int getRuntime() {

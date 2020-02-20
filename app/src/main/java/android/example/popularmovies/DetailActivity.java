@@ -4,27 +4,41 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.example.popularmovies.model.Movie;
+import android.example.popularmovies.model.Trailer;
 import android.example.popularmovies.utilities.NetworkUtils;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+
+import java.net.URL;
 
 public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerItemClickListener, AdapterView.OnItemSelectedListener {
 
     private Movie mMovie;
     private ImageView mPoster;
     private TextView mReleaseDateDetail, mDurationDetail,
-            mVoteAverageDetail, mPlotSynopsisDetail, mTrailerLabel, mErrorMessage;
+            mVoteAverageDetail, mPlotSynopsisDetail, mTrailerLabel;
     private RecyclerView mTrailerList;
-    private TrailerAdapter mTrailerAdapter;
+    private static TrailerAdapter mTrailerAdapter;
+
+    @SuppressLint("StaticFieldLeak")
+    private static ProgressBar mProgressBar;
+
+    @SuppressLint("StaticFieldLeak")
+    private static TextView mErrorTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +51,11 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mVoteAverageDetail = findViewById(R.id.tv_vote_average_detail);
         mPlotSynopsisDetail = findViewById(R.id.tv_plot_synopsis_detail);
         mTrailerLabel = findViewById(R.id.tv_trailer_label);
-        mErrorMessage = findViewById(R.id.tv_error_message);
 
         mTrailerList = findViewById(R.id.rv_trailers);
+
+        mProgressBar = findViewById(R.id.pb_movie_detail);
+        mErrorTextView = findViewById(R.id.tv_detail_activity_error);
 
         Intent intent = getIntent();
         if (intent.hasExtra(Intent.EXTRA_TEXT)) {
@@ -48,6 +64,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         }
 
         if(mMovie != null) {
+            new DetailActivity.FetchMovieDetailTask().execute(mMovie.getMovieId());
+
             showFields();
             this.setTitle(mMovie.getTitle());
             String mImageSize = "w400";
@@ -64,6 +82,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
             mTrailerAdapter = new TrailerAdapter(this, this);
             mTrailerList.setAdapter(mTrailerAdapter);
+
+//            new DetailActivity.FetchMovieDetailTask().execute(mMovie.getMovieId());
 
         } else {
             showError();
@@ -88,7 +108,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mPlotSynopsisDetail.setVisibility(View.VISIBLE);
         mTrailerLabel.setVisibility(View.VISIBLE);
         mTrailerList.setVisibility(View.VISIBLE);
-        mErrorMessage.setVisibility(View.INVISIBLE);
+        mErrorTextView.setVisibility(View.INVISIBLE);
 
     }
 
@@ -100,12 +120,19 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mPlotSynopsisDetail.setVisibility(View.INVISIBLE);
         mTrailerLabel.setVisibility(View.INVISIBLE);
         mTrailerList.setVisibility(View.INVISIBLE);
-        mErrorMessage.setVisibility(View.VISIBLE);
+        mErrorTextView.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void onTrailerItemClick(String trailerData) {
-
+    public void onTrailerItemClick(Trailer trailer) {
+        String trailerKey = trailer.getKey();
+        try {
+            Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(NetworkUtils.YOUTUBE_APP_LINK + trailerKey));
+            startActivity(appIntent);
+        } catch (ActivityNotFoundException ex) {
+            Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(NetworkUtils.YOUTUBE_WATCH_LINK + trailerKey));
+            startActivity(webIntent);
+        }
     }
 
     @Override
@@ -118,5 +145,47 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     public void onNothingSelected(AdapterView<?> parent) {
         // Do nothing
 
+    }
+
+    private static class FetchMovieDetailTask extends AsyncTask<Integer, Void, Movie> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // TODO: set visibility for the fields
+            mErrorTextView.setVisibility(View.INVISIBLE);
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Movie doInBackground(Integer... params) {
+
+            if (params.length == 0) {
+                return null;
+            }
+
+            int movieId = params[0];
+            String[] extraMovieDetails = new String[]{"videos","reviews"};
+            URL movieDetailUrl = NetworkUtils.getMovieDetails(movieId, NetworkUtils.language, extraMovieDetails);
+
+            try {
+                String movieDetailJson = NetworkUtils.getResponseFromMovieDetailsUrl(movieDetailUrl);
+                return NetworkUtils.parseMovieDetailDataFromJson(movieDetailJson);
+            } catch (Exception pme) {
+                pme.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Movie movieDetails) {
+            // TODO: set visibility for the fields
+            mProgressBar.setVisibility(View.INVISIBLE);
+            if (movieDetails != null) {
+                mTrailerAdapter.setTrailerListData(movieDetails.getTrailers());
+            } else {
+                mErrorTextView.setVisibility(View.VISIBLE);
+            }
+        }
     }
 }

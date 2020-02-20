@@ -28,10 +28,20 @@
     </style>
 
     <style name="ErrorText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:padding">5dp</item>
         <item name="android:textColor">#FF0000</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_gravity">center</item>
+        <item name="android:visibility">invisible</item>
+    </style>
+
+    <style name="ProgressBar">
+        <item name="android:layout_width">@dimen/progressBarWidth</item>
+        <item name="android:layout_height">@dimen/progressBarHeight</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:visibility">invisible</item>
     </style>
 
 </resources>

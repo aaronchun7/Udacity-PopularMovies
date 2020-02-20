@@ -123,14 +123,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         mMovieAdapter.setMovieListData(null);
         int selectedId = parent.getId();
-        String mLanguage = "en-US";
         String mRegion = "";
         switch(selectedId) {
             case (R.id.spinner_page):
                 mPageNumber = mPageArray.get(position);
                 mApiParams = new String[]{
                         mSortType,
-                        mLanguage,
+                        NetworkUtils.language,
                         String.valueOf(mPageNumber),
                         mRegion
                 };
@@ -139,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 mSortType = mSortBySpinner.getItemAtPosition(position).toString();
                 mApiParams = new String[]{
                         mSortType,
-                        mLanguage,
+                        NetworkUtils.language,
                         String.valueOf(mPageNumber),
                         mRegion
                 };
@@ -212,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         @Override
         protected void onPostExecute(String[] movieListData) {
             mProgressBar.setVisibility(View.INVISIBLE);
-            if(movieListData != null) {
+            if (movieListData != null) {
                 mTotalPageNumber = Integer.parseInt(movieListData[2]);
                 if (mPageArray == null) {
                     mPageArray = new ArrayList<>();

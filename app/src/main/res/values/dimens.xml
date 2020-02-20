@@ -2,4 +2,6 @@
 <resources>
     <dimen name="trailerPlayBtnVerticalMargin">5dp</dimen>
     <dimen name="trailerPlayBtnHorizontalMargin">12dp</dimen>
+    <dimen name="progressBarWidth">42dp</dimen>
+    <dimen name="progressBarHeight">@dimen/progressBarWidth</dimen>
 </resources>

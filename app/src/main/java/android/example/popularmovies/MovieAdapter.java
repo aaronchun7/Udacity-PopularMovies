@@ -42,8 +42,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     @Override
     public void onBindViewHolder(@NonNull MovieAdapter.MovieViewHolder movieAdapterViewHolder, int position) {
         String movieDataJson = mMovieListData.get(position);
-        Movie movie = NetworkUtils.parseMovieDataFromJson(movieDataJson);
-        String imagePath = NetworkUtils.IMAGE_BASE_URL + NetworkUtils.IMAGE_SIZE + movie.getPosterPath();
+
+//        Movie movie = NetworkUtils.parseMovieDataFromJson(movieDataJson);
+//        String imagePath = NetworkUtils.IMAGE_BASE_URL + NetworkUtils.IMAGE_SIZE + movie.getPosterPath();
+
+        String moviePosterPath = NetworkUtils.getMoviePosterPath(movieDataJson);
+        String imagePath = NetworkUtils.IMAGE_BASE_URL + NetworkUtils.IMAGE_SIZE + moviePosterPath;
+
         Picasso.get().setLoggingEnabled(true);
         Picasso.get().load(imagePath).resize(MainActivity.mThumbnailWidth,0).into(movieAdapterViewHolder.mPosterThumbnail);
     }
@@ -55,6 +60,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         return mMovieListData.size();
     }
 
+    /*
+        TODO: possible to make this a list of Movies instead; however, that would be extra processing
+        or will change the onBindViewHolder() method to only handle getting and using the poster
+     */
     public void setMovieListData(List<String> movieListData) {
         mMovieListData = movieListData;
         notifyDataSetChanged();
