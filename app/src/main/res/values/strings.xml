@@ -6,13 +6,15 @@
     <string name="page">Page:</string>
     <string name="releaseDateLabel">Release Date</string>
     <string name="releaseDateYear">1900</string>
-    <string name="movieDuration">N/A min</string>
+    <string name="movieDuration">%s min</string>
     <string name="voteAverageLabel">Vote Average</string>
-    <string name="voteAverageRating">NA/10</string>
+    <string name="voteAverageRating">%s/10</string>
     <string name="plotSynopsisLabel">Plot Synopsis</string>
     <string name="plotSynopsisSummary">Movie summaries can spark interest in movies.</string>
     <string name="trailerLabel">Trailers: </string>
     <string name="trailerItemText">Trailer %d</string>
+    <string name="favorite">Favorite</string>
+    <string name="unfavorite">Unfavorite</string>
     <string name="errorNoMovieData">Unfortunately, it appears there was no movie data pulled down. Try again later.</string>
     <string name="adapterPosterThumbnailDescription">This is a thumbnail of the movie poster.</string>
     <string name="detailPosterDescription">This image is of the movie poster that was selected.</string>

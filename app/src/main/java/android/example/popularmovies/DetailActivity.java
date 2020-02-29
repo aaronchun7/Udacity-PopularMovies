@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.example.popularmovies.model.Movie;
 import android.example.popularmovies.model.Trailer;
@@ -16,6 +17,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -24,12 +26,14 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.net.URL;
+import java.text.DecimalFormat;
 
-public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerItemClickListener, AdapterView.OnItemSelectedListener {
+public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerItemClickListener, AdapterView.OnItemSelectedListener, View.OnClickListener {
 
     private Movie mMovie;
-    private ImageView mPoster;
-    private TextView mReleaseDateDetail, mDurationDetail,
+    private static ImageView mPoster;
+    private static Button mFavotireBtn;
+    private static TextView mReleaseDateDetail, mDurationDetail,
             mVoteAverageDetail, mPlotSynopsisDetail, mTrailerLabel;
     private RecyclerView mTrailerList;
     private static TrailerAdapter mTrailerAdapter;
@@ -51,6 +55,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mVoteAverageDetail = findViewById(R.id.tv_vote_average_detail);
         mPlotSynopsisDetail = findViewById(R.id.tv_plot_synopsis_detail);
         mTrailerLabel = findViewById(R.id.tv_trailer_label);
+        mFavotireBtn = findViewById(R.id.btn_favorite);
+        mFavotireBtn.setOnClickListener(this);
 
         mTrailerList = findViewById(R.id.rv_trailers);
 
@@ -64,17 +70,10 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         }
 
         if(mMovie != null) {
-            new DetailActivity.FetchMovieDetailTask().execute(mMovie.getMovieId());
+            new DetailActivity.FetchMovieDetailTask(this).execute(mMovie.getMovieId());
 
             showFields();
             this.setTitle(mMovie.getTitle());
-            String mImageSize = "w400";
-            String imageUrl = NetworkUtils.IMAGE_BASE_URL + mImageSize + mMovie.getPosterPath();
-            Picasso.get().load(imageUrl).into(mPoster);
-            mReleaseDateDetail.setText(mMovie.getReleaseDate());
-            mDurationDetail.setText(String.valueOf(mMovie.getRuntime()));
-            mVoteAverageDetail.setText(String.valueOf(mMovie.getVoteAverage()));
-            mPlotSynopsisDetail.setText(mMovie.getOverview());
 
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
             mTrailerList.setLayoutManager(linearLayoutManager);
@@ -82,8 +81,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
             mTrailerAdapter = new TrailerAdapter(this, this);
             mTrailerList.setAdapter(mTrailerAdapter);
-
-//            new DetailActivity.FetchMovieDetailTask().execute(mMovie.getMovieId());
 
         } else {
             showError();
@@ -108,6 +105,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mPlotSynopsisDetail.setVisibility(View.VISIBLE);
         mTrailerLabel.setVisibility(View.VISIBLE);
         mTrailerList.setVisibility(View.VISIBLE);
+        mFavotireBtn.setVisibility(View.VISIBLE);
         mErrorTextView.setVisibility(View.INVISIBLE);
 
     }
@@ -120,6 +118,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mPlotSynopsisDetail.setVisibility(View.INVISIBLE);
         mTrailerLabel.setVisibility(View.INVISIBLE);
         mTrailerList.setVisibility(View.INVISIBLE);
+        mFavotireBtn.setVisibility(View.INVISIBLE);
         mErrorTextView.setVisibility(View.VISIBLE);
     }
 
@@ -147,7 +146,31 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     }
 
+    @Override
+    public void onClick(View v) {
+        int clickedItem = v.getId();
+        switch(clickedItem) {
+            case R.id.btn_favorite:
+                Button favoriteBtn = (Button)v;
+                if(favoriteBtn.getText().equals(getResources().getString(R.string.favorite))) {
+                    favoriteBtn.setText(getResources().getString(R.string.unfavorite));
+                    favoriteBtn.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.ic_star), null, null, null);
+                } else {
+                    favoriteBtn.setText(getResources().getString(R.string.favorite));
+                    favoriteBtn.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.ic_star_border), null, null, null);
+                }
+                break;
+        }
+    }
+
     private static class FetchMovieDetailTask extends AsyncTask<Integer, Void, Movie> {
+
+        @SuppressLint("StaticFieldLeak")
+        final Context mContext;
+
+        FetchMovieDetailTask(Context context) {
+            mContext = context;
+        }
 
         @Override
         protected void onPreExecute() {
@@ -183,6 +206,18 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             mProgressBar.setVisibility(View.INVISIBLE);
             if (movieDetails != null) {
                 mTrailerAdapter.setTrailerListData(movieDetails.getTrailers());
+
+                String mImageSize = "w400";
+                String imageUrl = NetworkUtils.IMAGE_BASE_URL + mImageSize + movieDetails.getPosterPath();
+                Picasso.get().load(imageUrl).into(mPoster);
+//            mReleaseDateDetail.setText(mMovie.getReleaseDate());
+                String[] dateArr = movieDetails.getReleaseDate().split("-"); //Format should be yyyy-mm-dd
+                mReleaseDateDetail.setText(dateArr[0]);
+                mDurationDetail.setText(String.format(mContext.getResources().getString(R.string.movieDuration), String.valueOf(movieDetails.getRuntime())));
+                String voteFormat = new DecimalFormat("#.#").format(movieDetails.getVoteAverage());
+                mVoteAverageDetail.setText(String.format(mContext.getResources().getString(R.string.voteAverageRating), voteFormat));
+                mPlotSynopsisDetail.setText(movieDetails.getOverview());
+
             } else {
                 mErrorTextView.setVisibility(View.VISIBLE);
             }

@@ -154,6 +154,7 @@ public class NetworkUtils {
                 movie.setBackdropPath(movieData.getString("backdrop_path"));
                 movie.setOriginalLanguage(movieData.getString("original_language"));
                 movie.setOriginalTitle(movieData.getString("original_title"));
+//                movie.setRuntime(movieData.getInt("runtime"));
 
                 JSONArray genreIdsJson = movieData.getJSONArray("genre_ids");
                 List<Integer> genreIds = new ArrayList<>();
